@@ -1,0 +1,17 @@
+title: Potential FTP/SSH Brute Force
+id: dfb461af-2e11-4541-893c-2834d5d4d3a1
+status: experimental
+description: Detects network flows indicative of FTP or SSH brute-forcing attempts based on ports and flow duration.
+author: SentinelX
+logsource:
+    category: network_flow
+    product: sentinelx
+detection:
+    selection:
+        Destination Port: [21, 22]
+        # In CIC-IDS2017, FTP-Patator / SSH-Patator often have moderate to high duration
+        # We'll use > 1,000,000 microseconds (1 second) as a simple heuristic for active brute forcing flow
+    condition: selection and flow_duration
+    flow_duration:
+        Flow Duration: '> 1000000'
+level: high

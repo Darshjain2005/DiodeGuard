@@ -1,0 +1,4 @@
+﻿title: "C2 Beaconing"
+description: "Detects periodic small heartbeat packets typical of Command and Control beacons"
+condition: "duration > 60 and packet_size_std < 5 and packets_forward > 10"
+severity: "HIGH"

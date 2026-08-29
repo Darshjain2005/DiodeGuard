@@ -1,0 +1,15 @@
+﻿fastapi
+uvicorn
+python-socketio
+websockets
+pandas
+numpy
+scikit-learn
+torch
+torch_geometric
+pyyaml
+pydantic
+sqlalchemy
+psycopg2-binary
+alembic
+redis

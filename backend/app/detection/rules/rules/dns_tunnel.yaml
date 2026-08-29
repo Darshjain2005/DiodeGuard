@@ -1,0 +1,4 @@
+﻿title: "DNS Tunneling / DGA"
+description: "Detects unusual volume of DNS requests which may indicate tunneling or DGA"
+condition: "dst_port == 53 and packets_forward > 1000 and bytes_forward > 100000"
+severity: "HIGH"

@@ -1,0 +1,16 @@
+title: Denial of Service (DoS) Activity
+id: 6a3fc263-f25f-42e1-95eb-b054236e788c
+status: experimental
+description: Detects extremely high packet rates indicative of DoS or DDoS attacks.
+author: SentinelX
+logsource:
+    category: network_flow
+    product: sentinelx
+detection:
+    selection:
+        # DoS requires high packet rate AND high packet count AND must be TCP (SYN flood)
+        Flow Packets/s: '> 50000'
+        Total Fwd Packets: '> 100'
+        SYN Flag Count: '> 0'
+    condition: selection
+level: critical

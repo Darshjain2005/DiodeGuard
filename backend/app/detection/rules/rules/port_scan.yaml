@@ -1,0 +1,17 @@
+title: Port Scanning Activity
+id: 9c8c9eb9-6a3f-45a8-9d3c-9a48d88e8b23
+status: experimental
+description: Detects flows that look like port scans (very short duration, minimal packets).
+author: SentinelX
+logsource:
+    category: network_flow
+    product: sentinelx
+detection:
+    selection:
+        # Port scans often complete (or time out) very quickly with tiny packet counts
+        Flow Duration: '< 100'
+        Total Fwd Packets: '<= 2'
+        Total Backward Packets: '<= 1'
+        SYN Flag Count: '> 0'
+    condition: selection
+level: medium

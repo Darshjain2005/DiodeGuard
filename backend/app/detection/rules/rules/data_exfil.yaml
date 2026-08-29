@@ -1,0 +1,4 @@
+﻿title: "Data Exfiltration"
+description: "Detects large outbound data transfers indicating potential data exfiltration"
+condition: "direction == 'outbound' and bytes_forward > 5000000"
+severity: "CRITICAL"

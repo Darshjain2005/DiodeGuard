@@ -60,8 +60,8 @@ def start_replay():
         try:
             from ingestion.flow_reader import FlowReader
             dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'combinenew.csv'))
-        if not os.path.exists(dataset_path):
-            dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'sample_traffic.csv'))
+            if not os.path.exists(dataset_path):
+                dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'sample_traffic.csv'))
             reader = FlowReader(dataset_path)
             orch = get_orchestrator()
             processed = 0

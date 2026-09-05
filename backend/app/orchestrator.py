@@ -161,7 +161,8 @@ class DiodeGuardOrchestrator:
                    "evidence": a["evidence"], "flow_id": flow_record.flow_id, "status": "NEW"}
             self.alerts_history.append(rec)
             payload = {"type": a["severity"], "text": f"[{a['severity']}] {a['threat_class']} by {a['engine']}. Conf: {a['confidence']*100:.1f}%. Src: {flow_record.src_ip}", "raw_alert": rec}
-            try: requests.post("http://127.0.0.1:5000/api/log-activity", json=payload, timeout=2)
+            node_url = os.environ.get("NODE_GATEWAY_URL", "http://127.0.0.1:5000")
+            try: requests.post(f"{node_url}/api/log-activity", json=payload, timeout=2)
             except: pass
         return alerts
 

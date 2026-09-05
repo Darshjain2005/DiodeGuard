@@ -34,7 +34,7 @@ const LoginPage = () => {
     const sendOTP = async (userEmail, userName) => {
         setOtpLoading(true);
         try {
-            const res = await fetch('http://127.0.0.1:5000/api/auth/send-otp', {
+            const res = await fetch(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://127.0.0.1:5000'}/api/auth/send-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userEmail, userName }),
@@ -83,7 +83,7 @@ const LoginPage = () => {
         setOtpLoading(true);
 
         try {
-            const res = await fetch('http://127.0.0.1:5000/api/auth/verify-otp', {
+            const res = await fetch(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://127.0.0.1:5000'}/api/auth/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otp }),

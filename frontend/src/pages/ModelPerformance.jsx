@@ -76,7 +76,7 @@ export default function ModelPerformance() {
   const fetchModelData = async (manual = false) => {
     if (manual) setIsRefreshing(true);
     try {
-      const res = await axios.get('http://localhost:8000/models', { timeout: 2500 });
+      const res = await axios.get(`${import.meta.env.VITE_PYTHON_API_URL || 'http://localhost:8000'}/models`, { timeout: 2500 });
       if (res.data) {
         setData({
           engines: res.data.engines || DEFAULT_ENGINES,

@@ -58,7 +58,7 @@ const Dashboard = () => {
   useEffect(() => {
     // 1. Fetch real metrics from Python API every second
     const fetchTimer = setInterval(() => {
-      fetch('http://localhost:8000/metrics')
+      fetch(`${import.meta.env.VITE_PYTHON_API_URL || 'http://localhost:8000'}/metrics`)
         .then(res => res.json())
         .then(data => {
           setStats({

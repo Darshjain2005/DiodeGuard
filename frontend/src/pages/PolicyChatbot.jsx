@@ -140,7 +140,7 @@ const PolicyChatbot = () => {
   }, [messages, loading]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5000/api/policy-status')
+    axios.get(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://127.0.0.1:5000'}/api/policy-status`)
       .then(r => {
         if (r.data.data.loaded) {
           setPolicyLoaded(true);
@@ -157,7 +157,7 @@ const PolicyChatbot = () => {
     try {
       const fd = new FormData();
       fd.append('policy', file);
-      const res = await axios.post('http://127.0.0.1:5000/api/upload-policy', fd, {
+      const res = await axios.post(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://127.0.0.1:5000'}/api/upload-policy`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (res.data.success) {
@@ -187,7 +187,7 @@ const PolicyChatbot = () => {
     setMessages(p => [...p, { role: 'user', content: q, timestamp: new Date() }]);
     setLoading(true);
     try {
-      const res = await axios.post('http://127.0.0.1:5000/api/ask-policy', { question: q });
+      const res = await axios.post(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://127.0.0.1:5000'}/api/ask-policy`, { question: q });
       if (res.data.success) {
         setMessages(p => [...p, { role: 'assistant', content: res.data.data.answer, timestamp: new Date() }]);
       }

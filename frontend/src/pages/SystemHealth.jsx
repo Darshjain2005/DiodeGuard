@@ -28,7 +28,7 @@ export default function SystemHealth() {
   const fetchHealth = useCallback(async (isManual = false) => {
     if (isManual) setIsRefreshing(true);
     try {
-      const res = await fetch('http://localhost:8000/health');
+      const res = await fetch(`${import.meta.env.VITE_PYTHON_API_URL || 'http://localhost:8000'}/health`);
       if (!res.ok) {
         throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
       }

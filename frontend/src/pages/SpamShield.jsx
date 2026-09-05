@@ -271,7 +271,7 @@ const SpamShield = () => {
     // Fetch real statuses and logs
     const checkStatus = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/email-agent/status');
+            const res = await fetch(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://localhost:5000'}/api/email-agent/status`);
             const data = await res.json();
             if (data.success) setIsActive(data.isRunning);
         } catch (err) {
@@ -282,7 +282,7 @@ const SpamShield = () => {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:5000/api/email-agent/logs');
+            const res = await fetch(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://localhost:5000'}/api/email-agent/logs`);
             const data = await res.json();
             if (data.success && data.data) {
                 const mappedLogs = data.data.map(log => {
@@ -318,7 +318,7 @@ const SpamShield = () => {
         // Optimistic UI update
         setIsActive(nextState);
         try {
-            await fetch('http://localhost:5000/api/email-agent/toggle', {
+            await fetch(`${import.meta.env.VITE_NODE_GATEWAY_URL || 'http://localhost:5000'}/api/email-agent/toggle`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ activate: nextState })

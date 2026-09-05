@@ -149,7 +149,7 @@ export default function TrafficAnalytics() {
   const fetchTrafficData = async (manual = false) => {
     if (manual) setIsRefreshing(true);
     try {
-      const res = await fetch('http://localhost:8000/traffic');
+      const res = await fetch(`${import.meta.env.VITE_PYTHON_API_URL || 'http://localhost:8000'}/traffic`);
       if (!res.ok) {
         throw new Error(`HTTP error ${res.status}`);
       }

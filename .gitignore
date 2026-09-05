@@ -51,3 +51,4 @@ yarn-debug.log*
 yarn-error.log*
 docker-compose.yml
 DiodeGuard_Blueprint_v1.0.pdf
+!datasets/sample_traffic.csv

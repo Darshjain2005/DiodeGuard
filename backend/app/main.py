@@ -19,6 +19,8 @@ def get_orchestrator():
     if orchestrator is None:
         from orchestrator import DiodeGuardOrchestrator
         dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'combinenew.csv'))
+        if not os.path.exists(dataset_path):
+            dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'sample_traffic.csv'))
         orchestrator = DiodeGuardOrchestrator(dataset_path)
     return orchestrator
 
@@ -58,6 +60,8 @@ def start_replay():
         try:
             from ingestion.flow_reader import FlowReader
             dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'combinenew.csv'))
+        if not os.path.exists(dataset_path):
+            dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'sample_traffic.csv'))
             reader = FlowReader(dataset_path)
             orch = get_orchestrator()
             processed = 0

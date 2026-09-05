@@ -50,6 +50,8 @@ class DiodeGuardOrchestrator:
         rules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'detection', 'rules', 'rules'))
         self.rule_engine = RuleEngine(rules_dir)
         print(f"    - Rule Engine Loaded ({len(self.rule_engine.rules)} rules)")
+        if not os.path.exists(self.dataset_path):
+            self.dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'sample_traffic.csv'))
         df = pd.read_csv(self.dataset_path, nrows=2000)
         df.columns = [c.strip() for c in df.columns]
         self.feature_cols = [c for c in df.columns if c not in ['Label', 'Flow ID', 'Source IP', 'Destination IP', 'Timestamp', 'Source Port', 'Destination Port', 'Protocol']]

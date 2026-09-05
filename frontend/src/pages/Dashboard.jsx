@@ -84,7 +84,7 @@ const Dashboard = () => {
     }, 1000);
 
     // 2. Connect to Socket.IO for real-time feed
-    const socket = io('http://127.0.0.1:5000', { transports: ['websocket', 'polling'] });
+    const socket = io((import.meta.env.VITE_NODE_GATEWAY_URL || 'http://127.0.0.1:5000'), { transports: ['websocket', 'polling'] });
     
     socket.on('new_activity', (data) => {
       setFeed(prev => [data, ...prev].slice(0, 50));

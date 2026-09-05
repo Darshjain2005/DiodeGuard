@@ -15,8 +15,8 @@ import {
 import { io } from 'socket.io-client';
 import axios from 'axios';
 
-const SOCKET_URL = 'http://127.0.0.1:5000';
-const BACKEND_BASE_URL = 'http://localhost:8000';
+const SOCKET_URL = (import.meta.env.VITE_NODE_GATEWAY_URL || 'http://127.0.0.1:5000');
+const BACKEND_BASE_URL = (import.meta.env.VITE_PYTHON_API_URL || 'http://localhost:8000');
 
 export default function LiveDetection() {
   const [alerts, setAlerts] = useState([]);

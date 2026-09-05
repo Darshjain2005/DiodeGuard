@@ -13,3 +13,6 @@ sqlalchemy
 psycopg2-binary
 alembic
 redis
+Flask
+gunicorn
+requests

@@ -16,3 +16,5 @@ redis
 Flask
 gunicorn
 requests
+flask-cors
+psutil

@@ -1,20 +1,11 @@
-﻿fastapi
-uvicorn
-python-socketio
-websockets
+Flask
+flask-cors
+gunicorn
 pandas
 numpy
 scikit-learn
-torch
-torch_geometric
-pyyaml
-pydantic
-sqlalchemy
-psycopg2-binary
-alembic
-redis
-Flask
-gunicorn
 requests
-flask-cors
 psutil
+pyyaml
+torch --index-url https://download.pytorch.org/whl/cpu
+torch_geometric

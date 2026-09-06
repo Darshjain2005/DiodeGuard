@@ -66,4 +66,27 @@ const PORT = process.env.PORT || 5000;
 // ✅ Start server
 httpServer.listen(PORT, () => {
   console.log(`[+] Server running on port ${PORT}`);
+
+  // ✅ Keep-alive pings every 14 minutes to prevent Render free tier spin-down
+  const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes
+  const SELF_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+  const PYTHON_API_URL = process.env.PYTHON_API_URL || '';
+
+  setInterval(async () => {
+    try {
+      const res = await fetch(`${SELF_URL}/api/health`);
+      console.log(`[keep-alive] Node self-ping: ${res.status}`);
+    } catch (err) {
+      console.log(`[keep-alive] Node self-ping failed: ${err.message}`);
+    }
+
+    if (PYTHON_API_URL) {
+      try {
+        const res = await fetch(`${PYTHON_API_URL}/ping`);
+        console.log(`[keep-alive] Python API ping: ${res.status}`);
+      } catch (err) {
+        console.log(`[keep-alive] Python API ping failed: ${err.message}`);
+      }
+    }
+  }, PING_INTERVAL);
 });

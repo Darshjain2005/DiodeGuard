@@ -12,23 +12,43 @@ app = Flask(__name__)
 CORS(app)
 
 orchestrator = None
+orchestrator_error = None
 replay_thread = None
 replay_running = False
 
 def get_orchestrator():
-    global orchestrator
-    if orchestrator is None:
-        from orchestrator import DiodeGuardOrchestrator
-        dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'combinenew.csv'))
-        if not os.path.exists(dataset_path):
-            dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'sample_traffic.csv'))
-        orchestrator = DiodeGuardOrchestrator(dataset_path)
+    global orchestrator, orchestrator_error
+    if orchestrator is None and orchestrator_error is None:
+        try:
+            from orchestrator import DiodeGuardOrchestrator
+            dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'combinenew.csv'))
+            if not os.path.exists(dataset_path):
+                dataset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'datasets', 'sample_traffic.csv'))
+            orchestrator = DiodeGuardOrchestrator(dataset_path)
+        except Exception as e:
+            orchestrator_error = str(e)
+            print(f"[!] Orchestrator failed to load: {e}")
     return orchestrator
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return jsonify({"status": "alive"})
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    orch = get_orchestrator()
-    data = orch.get_health_api()
+    data = {}
+    try:
+        orch = get_orchestrator()
+        if orch:
+            data = orch.get_health_api()
+        else:
+            data = {"uptime": "N/A", "uptime_seconds": 0, "total_flows": 0, "total_alerts": 0,
+                    "engines": {"Rule Engine": "OFFLINE", "Isolation Forest": "OFFLINE", "GraphSAGE": "OFFLINE"},
+                    "throughput_fps": 0, "orchestrator_error": orchestrator_error}
+    except Exception as e:
+        data = {"uptime": "N/A", "uptime_seconds": 0, "total_flows": 0, "total_alerts": 0,
+                "engines": {"Rule Engine": "ERROR", "Isolation Forest": "ERROR", "GraphSAGE": "ERROR"},
+                "throughput_fps": 0, "error": str(e)}
     try:
         cpu = psutil.cpu_percent(interval=0.1)
         mem = psutil.virtual_memory()
@@ -93,31 +113,60 @@ def replay_status():
 
 @app.route('/metrics', methods=['GET'])
 def get_metrics():
-    orch = get_orchestrator()
-    total = orch.stats["total_flows"]
-    alerts = orch.stats["total_alerts"]
-    rate = f"{(alerts / max(1, total)) * 100:.1f}%"
-    return jsonify({"total_flows": total, "total_alerts": alerts,
-                    "threat_distribution": orch.stats["threat_distribution"],
-                    "engines_active": 3, "rules_loaded": len(orch.rule_engine.rules),
-                    "detection_rate": rate})
+    try:
+        orch = get_orchestrator()
+        if not orch:
+            return jsonify({"total_flows": 0, "total_alerts": 0, "threat_distribution": {},
+                            "engines_active": 0, "rules_loaded": 0, "detection_rate": "0.0%",
+                            "error": orchestrator_error})
+        total = orch.stats["total_flows"]
+        alerts = orch.stats["total_alerts"]
+        rate = f"{(alerts / max(1, total)) * 100:.1f}%"
+        return jsonify({"total_flows": total, "total_alerts": alerts,
+                        "threat_distribution": orch.stats["threat_distribution"],
+                        "engines_active": 3, "rules_loaded": len(orch.rule_engine.rules),
+                        "detection_rate": rate})
+    except Exception as e:
+        return jsonify({"total_flows": 0, "total_alerts": 0, "threat_distribution": {},
+                        "engines_active": 0, "rules_loaded": 0, "detection_rate": "0.0%",
+                        "error": str(e)})
 
 @app.route('/alerts', methods=['GET'])
 def get_alerts():
-    orch = get_orchestrator()
-    severity = request.args.get('severity', 'ALL')
-    category = request.args.get('category', 'ALL')
-    return jsonify(orch.get_alerts_api(severity, category))
+    try:
+        orch = get_orchestrator()
+        if not orch:
+            return jsonify([])
+        severity = request.args.get('severity', 'ALL')
+        category = request.args.get('category', 'ALL')
+        return jsonify(orch.get_alerts_api(severity, category))
+    except Exception as e:
+        return jsonify([])
 
 @app.route('/traffic', methods=['GET'])
 def get_traffic():
-    orch = get_orchestrator()
-    return jsonify(orch.get_traffic_api())
+    try:
+        orch = get_orchestrator()
+        if not orch:
+            return jsonify({"total_flows": 0, "total_packets": 0, "total_bytes": 0,
+                            "avg_bytes_per_flow": 0, "avg_packets_per_flow": 0,
+                            "protocols": {}, "top_talkers": [], "top_ports": []})
+        return jsonify(orch.get_traffic_api())
+    except Exception as e:
+        return jsonify({"total_flows": 0, "total_packets": 0, "total_bytes": 0,
+                        "avg_bytes_per_flow": 0, "avg_packets_per_flow": 0,
+                        "protocols": {}, "top_talkers": [], "top_ports": [], "error": str(e)})
 
 @app.route('/models', methods=['GET'])
 def get_models():
-    orch = get_orchestrator()
-    return jsonify(orch.get_models_api())
+    try:
+        orch = get_orchestrator()
+        if not orch:
+            return jsonify({"engines": {}, "total_flows": 0, "total_alerts": 0, "threat_distribution": {}})
+        return jsonify(orch.get_models_api())
+    except Exception as e:
+        return jsonify({"engines": {}, "total_flows": 0, "total_alerts": 0,
+                        "threat_distribution": {}, "error": str(e)})
 
 if __name__ == '__main__':
     print("[*] Pre-loading detection engines...")
